@@ -1,30 +1,31 @@
 /**
  * IndiaMart Lead Autoclick Pro - Storage & State Management
+ * Production presets for Aguatech Engineers Pvt. Ltd.
  */
 
 const DEFAULT_SETTINGS = {
-  engineActive: false,
+  engineActive: true,
   soundEnabled: true,
   autoRefreshEnabled: true,
-  refreshInterval: 15, // seconds
+  refreshInterval: 40, // seconds
   showOnScreenTimer: true,
-  globalDailyClickLimit: 0, // 0 = unlimited
-  globalMinOrderValue: 0, // 0 = no min
+  globalDailyClickLimit: 10,
+  globalMinOrderValue: 0,
   excludeRetailLeads: false,
   filterOnlyVerified: false,
   verificationTypes: {
-    gst: false,
-    phone: false,
     email: false,
-    whatsapp: false,
-    website: false
+    gst: false,
+    phone: true,
+    website: false,
+    whatsapp: false
   },
-  useNegativeKeywords: false,
-  useLocations: false,
-  useBlockedLocations: false,
+  useNegativeKeywords: true,
+  useLocations: true,
+  useBlockedLocations: true,
   useExportCountries: false,
   useCategories: false,
-  keywordSorting: 'entry', // 'entry' or 'name'
+  keywordSorting: 'entry',
   categorySorting: 'entry',
   locationSorting: 'entry'
 };
@@ -39,6 +40,9 @@ const DEFAULT_KEYWORDS = [
     dailyLimit: 0,
     minOrderValue: 0,
     targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
     clicksToday: 0
   },
   {
@@ -49,29 +53,10 @@ const DEFAULT_KEYWORDS = [
     category: "",
     dailyLimit: 0,
     minOrderValue: 0,
-    targetLocation: "",
-    clicksToday: 0
-  },
-  {
-    id: "kw-3",
-    keyword: "electric forklift",
-    minQty: 1,
-    unit: "Piece",
-    category: "",
-    dailyLimit: 0,
-    minOrderValue: 0,
-    targetLocation: "",
-    clicksToday: 0
-  },
-  {
-    id: "kw-4",
-    keyword: "industrial Reach Truck",
-    minQty: 1,
-    unit: "Piece",
-    category: "",
-    dailyLimit: 0,
-    minOrderValue: 0,
-    targetLocation: "",
+    targetLocation: "All India",
+    targetScope: "all",
+    targetStates: [],
+    targetCities: [],
     clicksToday: 0
   },
   {
@@ -82,9 +67,282 @@ const DEFAULT_KEYWORDS = [
     category: "",
     dailyLimit: 0,
     minOrderValue: 0,
+    targetLocation: "Maharashtra, Gujarat, Karnataka, Goa, Madhya Pradesh, Jharkhand, Dadra and Nagar Haveli and Daman and Diu, Andhra Pradesh, Rajasthan, West Bengal",
+    targetScope: "custom",
+    targetStates: [
+      "Maharashtra",
+      "Gujarat",
+      "Karnataka",
+      "Goa",
+      "Madhya Pradesh",
+      "Jharkhand",
+      "Dadra and Nagar Haveli and Daman and Diu",
+      "Andhra Pradesh",
+      "Rajasthan",
+      "West Bengal"
+    ],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601068424",
+    keyword: "Arial work Platform",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
     targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601145060",
+    keyword: "Electric Reach stacker",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601223405",
+    keyword: "Mobile hydraulic Dock Ramp",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "All India",
+    targetScope: "all",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601250227",
+    keyword: "Jib Crane",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601271347",
+    keyword: "Hand Pallet Truck",
+    minQty: 10,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601301251",
+    keyword: "Battery Operated Pallet Truck",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601366315",
+    keyword: "Hydrualic Manual Stacker",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601403599",
+    keyword: "Semi Electric Stacker",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601421872",
+    keyword: "High Lift Pallet Truck",
+    minQty: 2,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601493317",
+    keyword: "Electrical Scissor Lift",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601533704",
+    keyword: "Industrial Dock Leveler",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "All India",
+    targetScope: "all",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601602815",
+    keyword: "Hydraulic Dock Leveler",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793601955304",
+    keyword: "Hydraulic Jib Crane",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793680199477",
+    keyword: "Hydraulic Dock Ramp",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "All India",
+    targetScope: "all",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793680216158",
+    keyword: "Self Propelled Scissor lift",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "All India",
+    targetScope: "all",
+    targetStates: [],
+    targetCities: [],
+    clicksToday: 0
+  },
+  {
+    id: "kw-1793680224857",
+    keyword: "Boom Lift",
+    minQty: 1,
+    unit: "Piece",
+    category: "",
+    dailyLimit: 0,
+    minOrderValue: 0,
+    targetLocation: "",
+    targetScope: "global",
+    targetStates: [],
+    targetCities: [],
     clicksToday: 0
   }
+];
+
+const DEFAULT_NEGATIVE_KEYWORDS = [
+  "Rental",
+  "Old",
+  "Service",
+  "Kit",
+  "Second Hand",
+  "Scrap",
+  "Repair",
+  "Godrej",
+  "Forklift Services",
+  "Diesel",
+  "Voltas Diesel",
+  "Gallop Pallet",
+  "Double Wheel Barrow",
+  "Rough Terrain"
+];
+
+const DEFAULT_LOCATIONS = [
+  "Maharashtra",
+  "Gujrat",
+  "Madhya Pradesh",
+  "Karnataka",
+  "Hydrabad",
+  "Goa"
+];
+
+const DEFAULT_BLOCKED_LOCATIONS = [
+  "Delhi",
+  "Bihar",
+  "Assam",
+  "North India",
+  "Noida",
+  "J & K"
 ];
 
 export class StorageManager {
@@ -111,7 +369,7 @@ export class StorageManager {
       ], (res) => {
         const today = StorageManager.getTodayString();
         let stats = res.stats || { clicksToday: 0, totalClicks: 0, lastResetDate: today };
-        let keywords = res.keywords || DEFAULT_KEYWORDS;
+        let keywords = (res.keywords && res.keywords.length > 0) ? res.keywords : DEFAULT_KEYWORDS;
         let history = res.history || [];
 
         // Midnight reset check
@@ -132,9 +390,9 @@ export class StorageManager {
           settings: { ...DEFAULT_SETTINGS, ...(res.settings || {}) },
           keywords,
           categories: res.categories || [],
-          negativeKeywords: res.negativeKeywords || [],
-          locations: res.locations || [],
-          blockedLocations: res.blockedLocations || [],
+          negativeKeywords: (res.negativeKeywords && res.negativeKeywords.length > 0) ? res.negativeKeywords : DEFAULT_NEGATIVE_KEYWORDS,
+          locations: (res.locations && res.locations.length > 0) ? res.locations : DEFAULT_LOCATIONS,
+          blockedLocations: (res.blockedLocations && res.blockedLocations.length > 0) ? res.blockedLocations : DEFAULT_BLOCKED_LOCATIONS,
           exportCountries: res.exportCountries || [],
           productCountryRules: res.productCountryRules || [],
           productLocationRules: res.productLocationRules || [],
@@ -195,4 +453,3 @@ export class StorageManager {
     return { stats: state.stats, historyItem };
   }
 }
-

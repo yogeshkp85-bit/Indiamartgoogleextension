@@ -1,0 +1,323 @@
+{
+  "settings": {
+    "engineActive": true,
+    "soundEnabled": true,
+    "autoRefreshEnabled": true,
+    "refreshInterval": 40,
+    "showOnScreenTimer": true,
+    "globalDailyClickLimit": 10,
+    "globalMinOrderValue": 0,
+    "excludeRetailLeads": false,
+    "filterOnlyVerified": false,
+    "verificationTypes": {
+      "email": false,
+      "gst": false,
+      "phone": true,
+      "website": false,
+      "whatsapp": false
+    },
+    "useNegativeKeywords": true,
+    "useLocations": true,
+    "useBlockedLocations": true,
+    "useExportCountries": false,
+    "useCategories": false,
+    "keywordSorting": "entry",
+    "categorySorting": "entry",
+    "locationSorting": "entry"
+  },
+  "keywords": [
+    {
+      "category": "",
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1",
+      "keyword": "Electric Stacker",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-2",
+      "keyword": "Scissor lift",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetCities": [],
+      "targetLocation": "All India",
+      "targetScope": "all",
+      "targetStates": [],
+      "unit": "Piece"
+    },
+    {
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-5",
+      "keyword": "Goods Lift",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetCities": [],
+      "targetLocation": "Maharashtra, Gujarat, Karnataka, Goa, Madhya Pradesh, Jharkhand, Dadra and Nagar Haveli and Daman and Diu, Andhra Pradesh, Rajasthan, West Bengal",
+      "targetScope": "custom",
+      "targetStates": [
+        "Maharashtra",
+        "Gujarat",
+        "Karnataka",
+        "Goa",
+        "Madhya Pradesh",
+        "Jharkhand",
+        "Dadra and Nagar Haveli and Daman and Diu",
+        "Andhra Pradesh",
+        "Rajasthan",
+        "West Bengal"
+      ],
+      "unit": "Piece"
+    },
+    {
+      "category": "",
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601068424",
+      "keyword": "Arial work Platform",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "category": "",
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601145060",
+      "keyword": "Electric Reach stacker",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "id": "kw-1793601223405",
+      "keyword": "Mobile hydraulic Dock Ramp",
+      "minQty": 1,
+      "unit": "Piece",
+      "targetScope": "all",
+      "targetLocation": "All India",
+      "targetStates": [],
+      "targetCities": [],
+      "minOrderValue": 0,
+      "dailyLimit": 0,
+      "clicksToday": 0
+    },
+    {
+      "clicksToday": 1,
+      "dailyLimit": 0,
+      "id": "kw-1793601250227",
+      "keyword": "Jib Crane",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601271347",
+      "keyword": "Hand Pallet Truck",
+      "minOrderValue": 0,
+      "minQty": 10,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "category": "",
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601301251",
+      "keyword": "Battery Operated Pallet Truck",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "category": "",
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601366315",
+      "keyword": "Hydrualic Manual Stacker",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "category": "",
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601403599",
+      "keyword": "Semi Electric Stacker",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601421872",
+      "keyword": "High Lift Pallet Truck",
+      "minOrderValue": 0,
+      "minQty": 2,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "category": "",
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601493317",
+      "keyword": "Electrical Scissor Lift",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601533704",
+      "keyword": "Industrial Dock Leveler",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetCities": [],
+      "targetLocation": "All India",
+      "targetScope": "all",
+      "targetStates": [],
+      "unit": "Piece"
+    },
+    {
+      "category": "",
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601602815",
+      "keyword": "Hydraulic Dock Leveler",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793601955304",
+      "keyword": "Hydraulic Jib Crane",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    },
+    {
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793680199477",
+      "keyword": "Hydraulic Dock Ramp",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetCities": [],
+      "targetLocation": "All India",
+      "targetScope": "all",
+      "targetStates": [],
+      "unit": "Piece"
+    },
+    {
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793680216158",
+      "keyword": "Self Propelled Scissor lift",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetCities": [],
+      "targetLocation": "All India",
+      "targetScope": "all",
+      "targetStates": [],
+      "unit": "Piece"
+    },
+    {
+      "clicksToday": 0,
+      "dailyLimit": 0,
+      "id": "kw-1793680224857",
+      "keyword": "Boom Lift",
+      "minOrderValue": 0,
+      "minQty": 1,
+      "targetLocation": "",
+      "unit": "Piece"
+    }
+  ],
+  "categories": [],
+  "negativeKeywords": [
+    "Rental",
+    "Old",
+    "Service",
+    "Kit",
+    "Second Hand",
+    "Scrap",
+    "Repair",
+    "Godrej",
+    "Forklift Services",
+    "Diesel",
+    "Voltas Diesel",
+    "Gallop Pallet",
+    "Double Wheel Barrow",
+    "Rough Terrain"
+  ],
+  "locations": [
+    "Maharashtra",
+    "Gujrat",
+    "Madhya Pradesh",
+    "Karnataka",
+    "Hydrabad",
+    "Goa"
+  ],
+  "blockedLocations": [
+    "Delhi",
+    "Bihar",
+    "Assam",
+    "North India",
+    "Noida",
+    "J & K"
+  ],
+  "exportCountries": [],
+  "productCountryRules": [],
+  "productLocationRules": [],
+  "stats": {
+    "clicksToday": 1,
+    "lastResetDate": "2026-11-04",
+    "totalClicks": 27
+  },
+  "history": [
+    {
+      "buyerLocation": "Jib Crane\nKatni,\nMadhya Pradesh",
+      "id": "click-1793764473571-aeri2",
+      "keyword": "Jib Crane",
+      "orderValue": "₹ 15,000",
+      "quantity": "1 Piece",
+      "status": "CLICKED",
+      "timeFormatted": "9:24:33 AM",
+      "timestamp": 1793764473571,
+      "title": "Engine Hydraulic Jib Crane"
+    }
+  ],
+  "clickedLeadIds": [
+    "sig-15017587-1tonelectricfor",
+    "title:1tonelectricforkliftformanufacturing",
+    "sig-1528441475-8fb3030ton80v50",
+    "title:8fb3030ton80v500mm3000mm",
+    "sig-1762589522-hydraulicscisso",
+    "title:hydraulicscissorliftselfpropelled",
+    "sig-775458300-twowheelerhydra",
+    "title:twowheelerhydraulicscissorlift",
+    "sig-23497095-enginehydraulic",
+    "title:enginehydraulicjibcrane"
+  ]
+}
