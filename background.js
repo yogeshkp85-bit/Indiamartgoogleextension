@@ -27,6 +27,15 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 // Message listener
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'RECORD_CLICK') {
+    // Report click to local web dashboard
+    try {
+      fetch('http://127.0.0.1:8080/api/record_click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request.data || {})
+      }).catch(() => {});
+    } catch (e) {}
+
     StorageManager.recordClick(request.data).then(({ stats }) => {
       updateBadge({ stats });
       sendResponse({ success: true, stats });
@@ -79,4 +88,35 @@ function updateBadge(state) {
     // Ignore in non-active contexts
   }
 }
+
+// -------------------------------------------------------------
+// LIVE WEB DASHBOARD SYNC (POLLS LOCAL DASHBOARD EVERY 10 SECONDS)
+// -------------------------------------------------------------
+let lastSyncedVersion = 0;
+async function syncFromDashboard() {
+  try {
+    const res = await fetch('http://127.0.0.1:8080/api/config');
+    if (!res.ok) return;
+    const cfg = await res.json();
+    if (cfg && cfg.version && cfg.version > lastSyncedVersion) {
+      lastSyncedVersion = cfg.version;
+      console.log('[DASHBOARD SYNC] Loaded config v' + cfg.version + ' from Web Dashboard');
+      await StorageManager.saveState({
+        settings: cfg.settings,
+        keywords: cfg.keywords,
+        negativeKeywords: cfg.negativeKeywords,
+        locations: cfg.locations,
+        blockedLocations: cfg.blockedLocations
+      });
+      const updated = await StorageManager.getState();
+      updateBadge(updated);
+    }
+  } catch (e) {
+    // Dashboard not running yet
+  }
+}
+
+// Poll every 10 seconds
+setInterval(syncFromDashboard, 10000);
+syncFromDashboard();
 
