@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "B2B Lead Auto-Buyer Pro (IndiaMart & TradeIndia)",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Automated BuyLead matching and contact engine for IndiaMart & TradeIndia sellers. Matches keywords, locations, quantities, and verification filters.",
   "icons": {
     "16": "icons/icon16.png",

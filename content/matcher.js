@@ -3,7 +3,14 @@
  * Evaluates BuyLead data against all user-configured rules and filters
  */
 
-class LeadMatcher {
+(function () {
+  'use strict';
+
+  if (typeof window !== 'undefined' && window.LeadMatcher) {
+    return;
+  }
+
+  class LeadMatcher {
   /**
    * Main evaluation method: returns { match: boolean, matchedKeyword: object|null, reason: string }
    */
@@ -429,3 +436,4 @@ class LeadMatcher {
 if (typeof window !== 'undefined') {
   window.LeadMatcher = LeadMatcher;
 }
+})();

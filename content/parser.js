@@ -3,7 +3,14 @@
  * Extracts structured data from IndiaMart BuyLead cards across all desktop, seller, and mobile layouts.
  */
 
-class LeadCardParser {
+(function () {
+  'use strict';
+
+  if (typeof window !== 'undefined' && window.LeadCardParser) {
+    return;
+  }
+
+  class LeadCardParser {
   /**
    * Determine if an element acts as a Contact Buyer action button
    */
@@ -590,3 +597,4 @@ class LeadCardParser {
 if (typeof window !== 'undefined') {
   window.LeadCardParser = LeadCardParser;
 }
+})();

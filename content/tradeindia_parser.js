@@ -7,7 +7,14 @@
  * - Handles optional confirmation dialogs ("Are you sure you want to consume 1 Buy Lead?").
  */
 
-class TradeIndiaParser {
+(function () {
+  'use strict';
+
+  if (typeof window !== 'undefined' && window.TradeIndiaParser) {
+    return;
+  }
+
+  class TradeIndiaParser {
   /**
    * Find all lead card elements in TradeIndia's left-side list
    */
@@ -305,74 +312,75 @@ class TradeIndiaParser {
     }
     return false;
   }
-  }
+}
 
   /**
    * Search for the "View Details" button in the right detail pane
    */
   static findViewDetailsButton() {
-    const clickables = Array.from(document.querySelectorAll(
-      'button, a, input[type="button"], input[type="submit"], div[role="button"], span.btn, span'
-    )).filter(el => el.offsetWidth > 0 && el.offsetHeight > 0);
+  const clickables = Array.from(document.querySelectorAll(
+    'button, a, input[type="button"], input[type="submit"], div[role="button"], span.btn, span'
+  )).filter(el => el.offsetWidth > 0 && el.offsetHeight > 0);
 
-    for (const el of clickables) {
-      const text = (el.innerText || el.textContent || el.value || '').trim().replace(/\s+/g, ' ').toLowerCase();
-      if (text === 'view details' || text === 'view detail' || text.startsWith('view details')) {
-        return el;
-      }
+  for (const el of clickables) {
+    const text = (el.innerText || el.textContent || el.value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+    if (text === 'view details' || text === 'view detail' || text.startsWith('view details')) {
+      return el;
     }
-    return null;
   }
+  return null;
+}
 
   /**
    * Poll for the "View Details" button to appear in the right pane after card selection
    */
   static async waitForViewDetailsButton(timeoutMs = 3500) {
-    const startTime = Date.now();
-    while (Date.now() - startTime < timeoutMs) {
-      const btn = TradeIndiaParser.findViewDetailsButton();
-      if (btn) return btn;
-      await new Promise(r => setTimeout(r, 200));
-    }
-    return null;
+  const startTime = Date.now();
+  while (Date.now() - startTime < timeoutMs) {
+    const btn = TradeIndiaParser.findViewDetailsButton();
+    if (btn) return btn;
+    await new Promise(r => setTimeout(r, 200));
   }
+  return null;
+}
 
   /**
    * Check and confirm any quota consumption popup ("Are you sure you want to consume 1 Buy Lead?")
    */
   static async handleConfirmationModal(timeoutMs = 2500) {
-    const startTime = Date.now();
-    while (Date.now() - startTime < timeoutMs) {
-      await new Promise(r => setTimeout(r, 200));
-      const modals = Array.from(document.querySelectorAll(
-        '.modal, .popup, [role="dialog"], .swal2-modal, .swal-modal, [class*="confirm"], [class*="dialog"]'
-      )).filter(m => m.offsetWidth > 0 && m.offsetHeight > 0);
+  const startTime = Date.now();
+  while (Date.now() - startTime < timeoutMs) {
+    await new Promise(r => setTimeout(r, 200));
+    const modals = Array.from(document.querySelectorAll(
+      '.modal, .popup, [role="dialog"], .swal2-modal, .swal-modal, [class*="confirm"], [class*="dialog"]'
+    )).filter(m => m.offsetWidth > 0 && m.offsetHeight > 0);
 
-      for (const modal of modals) {
-        const buttons = Array.from(modal.querySelectorAll('button, a, input[type="button"], span.btn'));
-        for (const btn of buttons) {
-          const btnText = (btn.innerText || btn.textContent || btn.value || '').trim().toLowerCase();
-          if (
-            btnText === 'confirm' ||
-            btnText === 'yes' ||
-            btnText === 'proceed' ||
-            btnText === 'ok' ||
-            btnText.includes('view details') ||
-            btnText.includes('consume')
-          ) {
-            console.log('[TI-Autoclick] Found modal confirmation button:', btnText);
-            btn.click();
-            await new Promise(r => setTimeout(r, 400));
-            return true;
-          }
+    for (const modal of modals) {
+      const buttons = Array.from(modal.querySelectorAll('button, a, input[type="button"], span.btn'));
+      for (const btn of buttons) {
+        const btnText = (btn.innerText || btn.textContent || btn.value || '').trim().toLowerCase();
+        if (
+          btnText === 'confirm' ||
+          btnText === 'yes' ||
+          btnText === 'proceed' ||
+          btnText === 'ok' ||
+          btnText.includes('view details') ||
+          btnText.includes('consume')
+        ) {
+          console.log('[TI-Autoclick] Found modal confirmation button:', btnText);
+          btn.click();
+          await new Promise(r => setTimeout(r, 400));
+          return true;
         }
       }
     }
-    return false;
   }
+  return false;
+}
 }
 
 if (typeof window !== 'undefined') {
   window.TradeIndiaParser = TradeIndiaParser;
 }
+})();
 
