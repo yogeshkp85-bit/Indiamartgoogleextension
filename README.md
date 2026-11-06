@@ -1,12 +1,15 @@
-# IndiaMart Lead Autoclick Pro (Chrome Extension)
+# B2B Lead Auto-Buyer Pro (IndiaMart & TradeIndia)
 
-An automated BuyLead matching and contact engine built specifically for sellers using `seller.indiamart.com`. It monitors incoming BuyLeads in real-time, evaluates them against your custom product keywords, quantity thresholds, location criteria, and verification badges, and safely executes "Contact Buyer Now" clicks.
+An automated BuyLead matching and contact engine built for sellers using `seller.indiamart.com` and `mti.tradeindia.com`. It monitors incoming BuyLeads in real-time, evaluates them against your custom product keywords, quantity thresholds, location criteria, and verification badges, and safely executes lead conversions.
 
 ---
 
 ## 🚀 Key Capabilities
 
-- **Automatic BuyLead Detection**: Analyzes DOM cards on `seller.indiamart.com/bl/` and identifies title, quantity, order value, buyer location, export country, and verification status.
+- **Dual-Portal Support**: Works natively on both **IndiaMart** (`seller.indiamart.com/bl/`) and **TradeIndia** (`mti.tradeindia.com/my-tradeindia/buy-trade-leads/latest-buy-trade-leads.html`).
+- **TradeIndia 2-Step Lead Conversion**: Automatically scans left-side TradeIndia leads, clicks to select the lead, verifies details, and clicks **"View Details"** to adjust from your allocated buy lead quota and unveil buyer details.
+- **IndiaMart 2-Step Contact Flow**: Automatically clicks "Contact Buyer Now" and submits quotation via "Send Reply".
+- **Unified Rule Engine**: Reuses the exact same 19 product keywords, MOQ thresholds, 14 negative keywords, and 36 States/UTs location filters across both portals.
 - **Rule Matching Engine**:
   - **Keywords**: Singular/plural matching, pharma term matching (e.g. *strip / stripe*), minimum quantity requirements, and target units.
   - **Click Limits**: Per-keyword click limits and global daily click ceilings (resets automatically at midnight).

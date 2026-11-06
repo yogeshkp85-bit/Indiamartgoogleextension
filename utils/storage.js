@@ -429,6 +429,7 @@ export class StorageManager {
       id: 'click-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
       timestamp: Date.now(),
       timeFormatted: new Date().toLocaleTimeString(),
+      portal: leadData.portal || 'IndiaMart',
       title: leadData.title || 'BuyLead Requirement',
       buyerLocation: leadData.location || 'India',
       keyword: leadData.keyword || 'General',

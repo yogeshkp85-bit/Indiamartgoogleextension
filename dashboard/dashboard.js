@@ -534,20 +534,26 @@ function renderHistory() {
   tbody.innerHTML = '';
 
   if (history.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 24px;">No leads clicked today yet. Turn on Auto-Click Engine and open seller.indiamart.com/bl/</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b; padding: 24px;">No leads clicked today yet. Turn on Auto-Click Engine and open seller.indiamart.com/bl/ or mti.tradeindia.com</td></tr>`;
     return;
   }
 
   history.forEach(item => {
     const tr = document.createElement('tr');
+    const isTI = (item.portal || '').toLowerCase().includes('tradeindia');
+    const portalTag = isTI
+      ? '<span style="background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid #0284c7; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600;">TradeIndia</span>'
+      : '<span style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600;">IndiaMart</span>';
+
     tr.innerHTML = `
       <td>${item.timeFormatted || new Date(item.timestamp).toLocaleTimeString()}</td>
+      <td>${portalTag}</td>
       <td><span style="color: #38bdf8; font-weight: 600;">${escapeHtml(item.keyword)}</span></td>
       <td><b>${escapeHtml(item.title)}</b></td>
       <td>${escapeHtml(item.buyerLocation)}</td>
       <td>${escapeHtml(item.quantity)}</td>
       <td>${escapeHtml(item.orderValue)}</td>
-      <td><span style="color: #10b981; font-weight: bold;">✔ CLICKED</span></td>
+      <td><span style="color: #10b981; font-weight: bold;">✔ CLAIMED</span></td>
     `;
     tbody.appendChild(tr);
   });
@@ -1020,11 +1026,11 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('No history to export yet.');
       return;
     }
-    let csv = 'Timestamp,Keyword,Title,Location,Quantity,Order Value,Status\n';
+    let csv = 'Timestamp,Portal,Keyword,Title,Location,Quantity,Order Value,Status\n';
     state.history.forEach(h => {
-      csv += `"${h.timeFormatted}","${h.keyword}","${h.title.replace(/"/g, '""')}","${h.buyerLocation}","${h.quantity}","${h.orderValue}","${h.status}"\n`;
+      csv += `"${h.timeFormatted}","${h.portal || 'IndiaMart'}","${h.keyword}","${h.title.replace(/"/g, '""')}","${h.buyerLocation}","${h.quantity}","${h.orderValue}","${h.status}"\n`;
     });
-    CSVManager.exportToCSV(`indiamart_click_history_${StorageManager.getTodayString()}.csv`, csv);
+    CSVManager.exportToCSV(`b2b_leads_history_${StorageManager.getTodayString()}.csv`, csv);
   });
 
   // Simulator

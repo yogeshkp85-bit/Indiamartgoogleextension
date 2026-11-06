@@ -46,11 +46,21 @@
   let isPausedByUser = false;
   let lastScanSummary = 'Ready. Waiting for first scan...';
 
+  // Portal Detection
+  const hostname = window.location.hostname.toLowerCase();
+  const isTradeIndia = hostname.includes('tradeindia.com');
+  const isIndiaMart = hostname.includes('indiamart.com');
+  const currentPortal = isTradeIndia ? 'TradeIndia' : 'IndiaMart';
+
   // Track leads clicked in current session
   const sessionClickedIds = new Set();
 
   function shouldRunOnThisPage() {
     const href = window.location.href.toLowerCase();
+    if (isTradeIndia) {
+      // Must be on Buy Trade Leads or Inquiries views
+      return href.includes('buy-trade-leads') || href.includes('buy_trade_leads') || href.includes('inquiry') || href.includes('my-tradeindia');
+    }
     // Do not run on Message Centre / Chat / Settings
     if (href.includes('/messagecentre') || href.includes('/messages') || href.includes('/chat') || href.includes('/profile') || href.includes('/billing') || href.includes('/settings')) {
       return false;
@@ -129,6 +139,12 @@
   async function scanPage(isManualTrigger = false) {
     if (!state.settings.engineActive && !isManualTrigger) return;
     if (isScanning) return;
+
+    if (isTradeIndia) {
+      await scanTradeIndiaPage(isManualTrigger);
+      return;
+    }
+
     isScanning = true;
 
     try {
@@ -206,6 +222,136 @@
       updateHUD();
     } catch (e) {
       console.warn('[IM-Autoclick] Scan error:', e);
+    } finally {
+      isScanning = false;
+    }
+  }
+
+  /**
+   * Scanning & 2-Step Claim Engine for TradeIndia (Master-Detail Layout)
+   * Step 1: Select lead card in left list to load right pane.
+   * Step 2: Detect "View Details" button in right pane and click to claim with allocated quota.
+   */
+  async function scanTradeIndiaPage(isManualTrigger = false) {
+    if (!state.settings.engineActive && !isManualTrigger) return;
+    if (isScanning) return;
+    isScanning = true;
+
+    try {
+      if (typeof TradeIndiaParser === 'undefined') {
+        console.warn('[TradeIndia-Autoclick] TradeIndiaParser not loaded.');
+        lastScanSummary = 'TradeIndia: Parser not initialized.';
+        updateHUD();
+        isScanning = false;
+        return;
+      }
+
+      const cards = TradeIndiaParser.findLeadCards();
+
+      if (!cards || cards.length === 0) {
+        lastScanSummary = `TradeIndia: No buy lead cards detected on this page.`;
+        updateHUD();
+        isScanning = false;
+        return;
+      }
+
+      let matchedCount = 0;
+      let firstSkipReason = '';
+
+      for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
+        if (card.dataset.autoclicked === 'true') continue;
+
+        const lead = TradeIndiaParser.parseCard(card);
+        if (!lead) continue;
+
+        const titleKey = 'title:' + (lead.title || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        if (
+          sessionClickedIds.has(lead.leadId) ||
+          sessionClickedIds.has(titleKey) ||
+          (state.clickedLeadIds && (state.clickedLeadIds.includes(lead.leadId) || state.clickedLeadIds.includes(titleKey)))
+        ) {
+          continue;
+        }
+
+        // Match against user rules (keywords, negatives, location whitelist/blacklist, MOQ)
+        const evaluation = LeadMatcher.evaluate(lead, state);
+
+        if (evaluation.match) {
+          console.log('[TradeIndia-Autoclick] Matched lead #' + (i + 1) + ':', lead.title, 'Keyword:', evaluation.matchedKeyword.keyword);
+          highlightCard(card, evaluation.matchedKeyword.keyword);
+          lead.keyword = evaluation.matchedKeyword.keyword;
+          lead.titleKey = titleKey;
+
+          // Safe human delay before opening lead
+          await new Promise((r) => setTimeout(r, 600));
+
+          // Step 1: Click the card in left list to load right pane
+          showToast(`⚡ Step 1/2: Loading details for ${lead.title} (${lead.location})...`);
+          triggerClick(lead.clickableElement || card);
+
+          // Step 2: Wait for "View Details" button in the right pane
+          const viewBtn = await TradeIndiaParser.waitForViewDetailsButton(3500);
+
+          if (viewBtn) {
+            console.log('[TradeIndia-Autoclick] Step 2: Found "View Details" button. Claiming lead...');
+            showToast(`⚡ Step 2/2: Claiming Buy Lead for ${lead.title}...`);
+            await new Promise((r) => setTimeout(r, 450));
+            triggerClick(viewBtn);
+
+            // Handle optional confirmation dialog ("Are you sure you want to consume 1 Buy Lead?")
+            await TradeIndiaParser.handleConfirmationModal(2500);
+
+            // Record as clicked & claimed
+            sessionClickedIds.add(lead.leadId);
+            sessionClickedIds.add(titleKey);
+            card.dataset.autoclicked = 'true';
+            matchedCount++;
+
+            showToast(`🎉 Buy Lead Claimed: ${lead.title}! Quota adjusted.`);
+            if (state.settings.soundEnabled && window.SoundNotifier) {
+              window.SoundNotifier.playSuccessChime();
+            }
+
+            // Send RECORD_CLICK to background worker
+            chrome.runtime.sendMessage({
+              action: 'RECORD_CLICK',
+              data: {
+                portal: 'TradeIndia',
+                leadId: lead.leadId,
+                titleKey: lead.titleKey,
+                title: lead.title,
+                location: lead.location,
+                keyword: lead.keyword,
+                quantity: `${lead.quantity} ${lead.unit}`,
+                orderValue: 'N/A'
+              }
+            });
+
+            await new Promise((r) => setTimeout(r, 1500));
+            break; // Process one lead per cycle to maintain pacing and quota safety
+          } else {
+            console.warn('[TradeIndia-Autoclick] "View Details" button not found or lead already viewed.');
+            sessionClickedIds.add(lead.leadId);
+            sessionClickedIds.add(titleKey);
+            card.dataset.autoclicked = 'true';
+          }
+        } else {
+          if (!firstSkipReason) {
+            firstSkipReason = evaluation.reason;
+          }
+        }
+      }
+
+      if (matchedCount > 0) {
+        lastScanSummary = `TradeIndia: ${cards.length} leads scanned. Claimed ${matchedCount} lead!`;
+      } else {
+        lastScanSummary = `TradeIndia: ${cards.length} leads scanned. 0 matched. (${firstSkipReason || 'Check keywords'})`;
+      }
+      updateHUD();
+    } catch (e) {
+      console.warn('[TradeIndia-Autoclick] Scan error:', e);
     } finally {
       isScanning = false;
     }
@@ -352,10 +498,12 @@
     hud = document.createElement('div');
     hud.id = 'im-autoclick-hud';
 
+    const portalBadge = isTradeIndia ? '🛒 TradeIndia' : '⚡ IndiaMart';
+
     hud.innerHTML = `
       <div class="im-hud-header">
         <div class="im-hud-title">
-          <span>⚡ IndiaMart Autoclick</span>
+          <span>${portalBadge} Autoclick</span>
         </div>
         <div class="im-hud-controls">
           <button class="im-hud-btn" id="im-hud-reset-btn" title="Reset today's click memory and history">🔄 Reset</button>
@@ -450,9 +598,9 @@
 
       let cards = [];
       try {
-        cards = LeadCardParser.findLeadCards();
+        cards = isTradeIndia ? TradeIndiaParser.findLeadCards() : LeadCardParser.findLeadCards();
       } catch (findErr) {
-        console.error('[IM-Autoclick] findLeadCards error:', findErr);
+        console.error(`[${currentPortal}-Autoclick] findLeadCards error:`, findErr);
       }
 
       const activeKwList = (state.keywords || []).map(k => `"${k.keyword}"`).join(', ');
@@ -468,7 +616,7 @@
       } else {
         cards.forEach((card, idx) => {
           try {
-            const lead = LeadCardParser.parseCard(card);
+            const lead = isTradeIndia ? TradeIndiaParser.parseCard(card) : LeadCardParser.parseCard(card);
             if (!lead) {
               const preview = (card.innerText || '').slice(0, 80).replace(/\s+/g, ' ');
               cardsHtml += `

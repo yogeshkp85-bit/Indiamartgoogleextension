@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "IndiaMart Lead Autoclick Pro",
-  "version": "1.4.6",
-  "description": "Automated BuyLead matching and contact engine for IndiaMart sellers. Matches keywords, locations, quantities, and verification filters.",
+  "name": "B2B Lead Auto-Buyer Pro (IndiaMart & TradeIndia)",
+  "version": "1.5.0",
+  "description": "Automated BuyLead matching and contact engine for IndiaMart & TradeIndia sellers. Matches keywords, locations, quantities, and verification filters.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -33,6 +33,8 @@
   "host_permissions": [
     "https://*.indiamart.com/*",
     "https://seller.indiamart.com/*",
+    "https://*.tradeindia.com/*",
+    "https://mti.tradeindia.com/*",
     "http://localhost/*",
     "http://127.0.0.1/*"
   ],
@@ -41,6 +43,8 @@
       "matches": [
         "https://*.indiamart.com/*",
         "https://seller.indiamart.com/*",
+        "https://*.tradeindia.com/*",
+        "https://mti.tradeindia.com/*",
         "http://localhost/*",
         "http://127.0.0.1/*"
       ],
@@ -49,6 +53,7 @@
         "utils/audio.js",
         "utils/locations_data.js",
         "content/parser.js",
+        "content/tradeindia_parser.js",
         "content/matcher.js",
         "content/content.js"
       ],
