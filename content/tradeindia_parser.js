@@ -94,8 +94,8 @@ class TradeIndiaParser {
 
     // Clean title from timestamps, buyer avatars or attached MOQ
     title = title.replace(/\b\d+\s+(?:hours?|days?|mins?|minutes?)\s+ago\b/gi, '')
-                 .replace(/\bMOQ\s*[-:].*$/i, '')
-                 .trim();
+      .replace(/\bMOQ\s*[-:].*$/i, '')
+      .trim();
 
     // 2. Quantity & Unit from MOQ
     let quantity = 1;
@@ -168,13 +168,28 @@ class TradeIndiaParser {
 
     // 6. Lead ID
     const cardIdAttr = cardEl.getAttribute('data-id') ||
-                       cardEl.getAttribute('data-inquiry-id') ||
-                       cardEl.getAttribute('data-lead-id') ||
-                       cardEl.id;
+      cardEl.getAttribute('data-inquiry-id') ||
+      cardEl.getAttribute('data-lead-id') ||
+      cardEl.id;
     const cleanSig = (title + '_' + (buyerName || '') + '_' + (locationStr || '') + '_' + timestamp).toLowerCase().replace(/[^a-z0-9]/g, '');
     const leadId = cardIdAttr ? `ti-${cardIdAttr}` : `ti-${cleanSig.slice(0, 32)}`;
 
-    // 7. Clickable Element (to select card in the left list)
+    // 7. Check if card is marked as Read or already in account
+    let isRead = false;
+    const cardClass = (cardEl.className || '').toLowerCase();
+    if (
+      (cardClass.includes('read') && !cardClass.includes('unread')) ||
+      cardClass.includes('viewed') ||
+      cardClass.includes('contacted') ||
+      cardEl.getAttribute('data-read') === '1' ||
+      cardEl.getAttribute('data-read') === 'true' ||
+      cardEl.getAttribute('data-status') === 'read' ||
+      cardEl.getAttribute('data-is-read') === '1'
+    ) {
+      isRead = true;
+    }
+
+    // 8. Clickable Element (to select card in the left list)
     const clickableElement = cardEl.querySelector('a, h2, h3, h4, h5, [class*="title"]') || cardEl;
 
     return {
@@ -192,11 +207,104 @@ class TradeIndiaParser {
       country: 'India',
       isRetail: false,
       isRecommendation: false,
+      isRead,
       verifications: { phone: true, gst: false, email: false, whatsapp: false, website: false },
       element: cardEl,
       clickableElement,
       button: clickableElement // Satisfies matcher.js and general lead checks
     };
+  }
+
+  /**
+   * Ensure that TradeIndia list is filtered to "Unread" leads
+   * Automatically switches the filter dropdown to "Unread" if set to "All" or "Read"
+   */
+  static async ensureUnreadFilterActive() {
+    try {
+      // 1. Check all native select elements on the page (filter dropdown)
+      const selects = Array.from(document.querySelectorAll('select'));
+      for (const sel of selects) {
+        const options = Array.from(sel.options);
+        const unreadOpt = options.find(o => o.text.trim().toLowerCase().includes('unread') || o.value.toLowerCase().includes('unread'));
+        if (unreadOpt) {
+          if (sel.value !== unreadOpt.value) {
+            console.log('[TI-Autoclick] Auto-switching filter select to Unread:', unreadOpt.value);
+            sel.value = unreadOpt.value;
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+            sel.dispatchEvent(new Event('input', { bubbles: true }));
+            await new Promise(r => setTimeout(r, 600));
+            return true;
+          }
+          return false; // Already on unread
+        }
+      }
+
+      // 2. Check custom dropdown buttons / pills (e.g. Bootstrap or custom div dropdowns)
+      const midX = window.innerWidth * 0.55;
+      const filterCandidates = Array.from(document.querySelectorAll(
+        'button, [class*="dropdown"], [class*="filter"], [class*="select"], [role="button"], span'
+      )).filter(el => {
+        const r = el.getBoundingClientRect();
+        return r.left < midX && r.top < 300 && el.offsetWidth > 0 && el.offsetHeight > 0;
+      });
+
+      for (const el of filterCandidates) {
+        const txt = (el.innerText || el.textContent || '').trim().toLowerCase();
+        // If the dropdown currently shows "All" or "Read", switch it to "Unread"
+        if (txt === 'all' || txt === 'all leads' || txt === 'read') {
+          console.log('[TI-Autoclick] Filter is currently "' + txt + '". Clicking to switch to Unread...');
+          el.click();
+          await new Promise(r => setTimeout(r, 350));
+
+          // Look for option "Unread" in the opened menu
+          const menuItems = Array.from(document.querySelectorAll('a, button, li, div, span'));
+          for (const item of menuItems) {
+            const itemText = (item.innerText || item.textContent || '').trim().toLowerCase();
+            if (itemText === 'unread' || itemText === 'unread leads') {
+              item.click();
+              console.log('[TI-Autoclick] Successfully selected "Unread" filter option.');
+              await new Promise(r => setTimeout(r, 600));
+              return true;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[TI-Autoclick] ensureUnreadFilterActive error:', err);
+    }
+    return false;
+  }
+
+  /**
+   * Check if lead in the right detail pane is already claimed / already in our account
+   * Signs:
+   * 1. Phone number is unmasked (no asterisks).
+   * 2. No "View Details" button exists.
+   * 3. Badges like "Already Viewed", "Contacted", "Details Viewed".
+   */
+  static isLeadAlreadyInAccount() {
+    try {
+      const detailContainer = document.querySelector('[class*="detail"], .right-section, #detail_view, main') || document.body;
+      const text = (detailContainer.innerText || detailContainer.textContent || '').toLowerCase();
+
+      // Check for unmasked mobile number: standard Indian mobile without asterisks
+      const hasMaskedPhone = /\+?91\d{2}\*{3,}/.test(text);
+      const hasUnmaskedPhone = /\+?91[\s-]?[6-9]\d{9}\b/.test(text) && !hasMaskedPhone;
+
+      // Check for already claimed/viewed badge
+      const hasClaimedText = /already\s+(?:viewed|contacted|purchased|claimed)|details\s+viewed|contact\s+buyer/i.test(text);
+
+      // Check if "View Details" button is absent
+      const viewBtn = TradeIndiaParser.findViewDetailsButton();
+
+      if (hasUnmaskedPhone || (hasClaimedText && !viewBtn) || !viewBtn) {
+        return true;
+      }
+    } catch (err) {
+      console.warn('[TI-Autoclick] isLeadAlreadyInAccount check error:', err);
+    }
+    return false;
+  }
   }
 
   /**

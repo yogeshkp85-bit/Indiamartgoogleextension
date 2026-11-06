@@ -246,10 +246,17 @@
         return;
       }
 
+      // Ensure TradeIndia is filtered to "Unread" leads only
+      const switchedFilter = await TradeIndiaParser.ensureUnreadFilterActive();
+      if (switchedFilter) {
+        showToast('🔍 TradeIndia: Filter set to "Unread"');
+        await new Promise(r => setTimeout(r, 600));
+      }
+
       const cards = TradeIndiaParser.findLeadCards();
 
       if (!cards || cards.length === 0) {
-        lastScanSummary = `TradeIndia: No buy lead cards detected on this page.`;
+        lastScanSummary = `TradeIndia: No unread buy leads detected.`;
         updateHUD();
         isScanning = false;
         return;
@@ -264,6 +271,13 @@
 
         const lead = TradeIndiaParser.parseCard(card);
         if (!lead) continue;
+
+        // Skip leads that are already marked as read
+        if (lead.isRead) {
+          console.log('[TradeIndia-Autoclick] Skipping already read lead:', lead.title);
+          card.dataset.autoclicked = 'true';
+          continue;
+        }
 
         const titleKey = 'title:' + (lead.title || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 
@@ -291,7 +305,19 @@
           showToast(`⚡ Step 1/2: Loading details for ${lead.title} (${lead.location})...`);
           triggerClick(lead.clickableElement || card);
 
-          // Step 2: Wait for "View Details" button in the right pane
+          // Step 2: Wait for detail view and check if already in account
+          await new Promise((r) => setTimeout(r, 500));
+
+          if (TradeIndiaParser.isLeadAlreadyInAccount()) {
+            console.log('[TradeIndia-Autoclick] Lead is already in our account (already read):', lead.title);
+            sessionClickedIds.add(lead.leadId);
+            sessionClickedIds.add(titleKey);
+            card.dataset.autoclicked = 'true';
+            showToast(`ℹ️ Lead already in account: ${lead.title}`);
+            continue;
+          }
+
+          // Wait for "View Details" button in the right pane
           const viewBtn = await TradeIndiaParser.waitForViewDetailsButton(3500);
 
           if (viewBtn) {
@@ -634,6 +660,20 @@
                   <div class="im-inspect-title">#${idx + 1}: Unrecognized Card Structure</div>
                   <div class="im-inspect-meta"><span>Preview: "${escapeHtml(preview)}"</span></div>
                   <div class="im-inspect-reason skip">⏭️ SKIPPED: Card could not be parsed as a BuyLead.</div>
+                </div>
+              `;
+              return;
+            }
+
+            if (lead.isRead) {
+              cardsHtml += `
+                <div class="im-inspect-card-item skip">
+                  <div class="im-inspect-title">#${idx + 1}: ${escapeHtml(lead.title)} <span style="color:#94a3b8;font-size:11px;">[READ]</span></div>
+                  <div class="im-inspect-meta">
+                    <span><b>Qty:</b> ${lead.quantity} ${escapeHtml(lead.unit)}</span>
+                    <span><b>Location:</b> ${escapeHtml(lead.location)}</span>
+                  </div>
+                  <div class="im-inspect-reason skip">⏭️ SKIPPED: Already read / in your account.</div>
                 </div>
               `;
               return;
