@@ -168,9 +168,39 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('scan-now-btn').addEventListener('click', async () => {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tabs && tabs[0]) {
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'SCAN_PAGE_NOW' }, (resp) => {
+      const tabId = tabs[0].id;
+      const sendScan = () => {
+        chrome.tabs.sendMessage(tabId, { action: 'SCAN_PAGE_NOW' }, (resp) => {
+          if (!chrome.runtime.lastError) {
+            window.close();
+          } else {
+            alert('Please navigate to IndiaMart (seller.indiamart.com/bl/) or TradeIndia (mti.tradeindia.com) and reload the page.');
+          }
+        });
+      };
+
+      chrome.tabs.sendMessage(tabId, { action: 'SCAN_PAGE_NOW' }, async (resp) => {
         if (chrome.runtime.lastError) {
-          alert('Please navigate to IndiaMart Seller BuyLeads page first:\nhttps://seller.indiamart.com/bl/');
+          try {
+            await chrome.scripting.executeScript({
+              target: { tabId },
+              files: [
+                'utils/audio.js',
+                'utils/locations_data.js',
+                'content/parser.js',
+                'content/tradeindia_parser.js',
+                'content/matcher.js',
+                'content/content.js'
+              ]
+            });
+            await chrome.scripting.insertCSS({
+              target: { tabId },
+              files: ['content/content.css']
+            });
+            setTimeout(sendScan, 300);
+          } catch (err) {
+            alert('Please open IndiaMart (seller.indiamart.com) or TradeIndia (mti.tradeindia.com) and reload the tab.');
+          }
         } else {
           window.close();
         }

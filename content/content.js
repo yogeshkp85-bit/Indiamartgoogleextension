@@ -58,10 +58,10 @@
   function shouldRunOnThisPage() {
     const href = window.location.href.toLowerCase();
     if (isTradeIndia) {
-      // Must be on Buy Trade Leads or Inquiries views
-      return href.includes('buy-trade-leads') || href.includes('buy_trade_leads') || href.includes('inquiry') || href.includes('my-tradeindia');
+      // Run across all TradeIndia pages
+      return true;
     }
-    // Do not run on Message Centre / Chat / Settings
+    // Do not run on Message Centre / Chat / Settings on IndiaMart
     if (href.includes('/messagecentre') || href.includes('/messages') || href.includes('/chat') || href.includes('/profile') || href.includes('/billing') || href.includes('/settings')) {
       return false;
     }
@@ -491,12 +491,19 @@
   /**
    * HUD Overlay
    */
+  function ensureHUD() {
+    if (!document.getElementById('im-autoclick-hud')) {
+      buildHUD();
+    }
+  }
+
   function buildHUD() {
     let hud = document.getElementById('im-autoclick-hud');
     if (hud) return;
 
     hud = document.createElement('div');
     hud.id = 'im-autoclick-hud';
+    hud.style.cssText = 'position: fixed !important; bottom: 24px !important; right: 24px !important; z-index: 2147483647 !important; background: #0f172a !important; color: #f8fafc !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; font-size: 13px !important; border-radius: 12px !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important; border: 1px solid #334155 !important; padding: 12px 16px !important; min-width: 280px !important; max-width: 360px !important; user-select: none !important; display: block !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important;';
 
     const portalBadge = isTradeIndia ? '🛒 TradeIndia' : '⚡ IndiaMart';
 
@@ -531,7 +538,10 @@
       </div>
     `;
 
-    document.body.appendChild(hud);
+    const targetContainer = document.body || document.documentElement;
+    if (targetContainer) {
+      targetContainer.appendChild(hud);
+    }
 
     // Event listeners
     document.getElementById('im-hud-reset-btn').addEventListener('click', () => {
@@ -785,12 +795,14 @@
   function startScanLoop() {
     if (scanIntervalId) clearInterval(scanIntervalId);
     scanIntervalId = setInterval(() => {
+      ensureHUD();
       if (state.settings.engineActive) {
         scanPage();
       }
     }, 2500);
 
     setTimeout(() => {
+      ensureHUD();
       if (state.settings.engineActive) scanPage();
     }, 1200);
   }
@@ -802,6 +814,7 @@
     if (countdownTimerId) clearInterval(countdownTimerId);
 
     countdownTimerId = setInterval(() => {
+      ensureHUD();
       if (!state.settings.engineActive || !state.settings.autoRefreshEnabled) {
         const cdEl = document.getElementById('im-hud-countdown');
         if (cdEl) cdEl.innerText = 'Auto-refresh off';

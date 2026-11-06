@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "B2B Lead Auto-Buyer Pro (IndiaMart & TradeIndia)",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Automated BuyLead matching and contact engine for IndiaMart & TradeIndia sellers. Matches keywords, locations, quantities, and verification filters.",
   "icons": {
     "16": "icons/icon16.png",
@@ -28,13 +28,20 @@
   "permissions": [
     "storage",
     "alarms",
-    "notifications"
+    "notifications",
+    "scripting"
   ],
   "host_permissions": [
     "https://*.indiamart.com/*",
+    "http://*.indiamart.com/*",
     "https://seller.indiamart.com/*",
+    "http://seller.indiamart.com/*",
     "https://*.tradeindia.com/*",
+    "http://*.tradeindia.com/*",
+    "https://tradeindia.com/*",
+    "http://tradeindia.com/*",
     "https://mti.tradeindia.com/*",
+    "http://mti.tradeindia.com/*",
     "http://localhost/*",
     "http://127.0.0.1/*"
   ],
@@ -42,9 +49,15 @@
     {
       "matches": [
         "https://*.indiamart.com/*",
+        "http://*.indiamart.com/*",
         "https://seller.indiamart.com/*",
+        "http://seller.indiamart.com/*",
         "https://*.tradeindia.com/*",
+        "http://*.tradeindia.com/*",
+        "https://tradeindia.com/*",
+        "http://tradeindia.com/*",
         "https://mti.tradeindia.com/*",
+        "http://mti.tradeindia.com/*",
         "http://localhost/*",
         "http://127.0.0.1/*"
       ],

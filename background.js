@@ -24,6 +24,30 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   }
 });
 
+// Dynamic injection listener to guarantee scripts run on TradeIndia and IndiaMart tabs
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab && tab.url) {
+    const url = tab.url.toLowerCase();
+    if (url.includes('tradeindia.com') || url.includes('indiamart.com')) {
+      chrome.scripting.executeScript({
+        target: { tabId },
+        files: [
+          'utils/audio.js',
+          'utils/locations_data.js',
+          'content/parser.js',
+          'content/tradeindia_parser.js',
+          'content/matcher.js',
+          'content/content.js'
+        ]
+      }).catch(() => {});
+      chrome.scripting.insertCSS({
+        target: { tabId },
+        files: ['content/content.css']
+      }).catch(() => {});
+    }
+  }
+});
+
 // Message listener
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'RECORD_CLICK') {

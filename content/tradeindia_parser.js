@@ -120,27 +120,35 @@ class TradeIndiaParser {
     }
 
     // Scan for Indian cities / states known in IndiaLocationsManager
-    if (typeof IndiaLocationsManager !== 'undefined') {
-      const textLower = fullText.toLowerCase();
-      // Try finding city first
-      for (const [st, cities] of Object.entries(INDIA_STATES_AND_CITIES)) {
-        for (const city of cities) {
-          if (textLower.includes(city.toLowerCase())) {
-            locationStr = `${city}, ${st}`;
-            break;
+    try {
+      if (typeof IndiaLocationsManager !== 'undefined') {
+        const textLower = fullText.toLowerCase();
+        const citiesMap = (typeof window !== 'undefined' && window.INDIA_STATES_AND_CITIES)
+          ? window.INDIA_STATES_AND_CITIES
+          : (typeof INDIA_STATES_AND_CITIES !== 'undefined' ? INDIA_STATES_AND_CITIES : {});
+
+        for (const [st, cities] of Object.entries(citiesMap)) {
+          for (const city of cities) {
+            if (textLower.includes(city.toLowerCase())) {
+              locationStr = `${city}, ${st}`;
+              break;
+            }
+          }
+          if (locationStr) break;
+        }
+
+        // If city not found, try all states
+        if (!locationStr && typeof IndiaLocationsManager.getAllStatesAndUTs === 'function') {
+          for (const st of IndiaLocationsManager.getAllStatesAndUTs()) {
+            if (textLower.includes(st.toLowerCase())) {
+              locationStr = st;
+              break;
+            }
           }
         }
-        if (locationStr) break;
       }
-      // If city not found, try all states
-      if (!locationStr) {
-        for (const st of IndiaLocationsManager.getAllStatesAndUTs()) {
-          if (textLower.includes(st.toLowerCase())) {
-            locationStr = st;
-            break;
-          }
-        }
-      }
+    } catch (locErr) {
+      console.warn('[TI-Autoclick] Location parse fallback:', locErr);
     }
 
     if (!locationStr) {
@@ -259,3 +267,4 @@ class TradeIndiaParser {
 if (typeof window !== 'undefined') {
   window.TradeIndiaParser = TradeIndiaParser;
 }
+
