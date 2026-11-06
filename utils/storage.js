@@ -170,7 +170,7 @@ const DEFAULT_KEYWORDS = [
   },
   {
     id: "kw-1793601366315",
-    keyword: "Hydrualic Manual Stacker",
+    keyword: "Hydraulic Manual Stacker",
     minQty: 1,
     unit: "Piece",
     category: "",
@@ -329,10 +329,10 @@ const DEFAULT_NEGATIVE_KEYWORDS = [
 
 const DEFAULT_LOCATIONS = [
   "Maharashtra",
-  "Gujrat",
+  "Gujarat",
   "Madhya Pradesh",
   "Karnataka",
-  "Hydrabad",
+  "Hyderabad",
   "Goa"
 ];
 
@@ -371,19 +371,17 @@ export class StorageManager {
         let stats = res.stats || { clicksToday: 0, totalClicks: 0, lastResetDate: today };
         let keywords = (res.keywords && res.keywords.length > 0) ? res.keywords : DEFAULT_KEYWORDS;
         let history = res.history || [];
+        let clickedLeadIds = res.clickedLeadIds || [];
 
-        // Midnight reset check
+        // Midnight reset check: rollover daily click counters and reset clicked lead memory for the new day
         if (stats.lastResetDate !== today) {
           stats.clicksToday = 0;
           stats.lastResetDate = today;
           keywords = keywords.map(k => ({ ...k, clicksToday: 0 }));
-          // Keep only today's history or preserve older as needed
-          history = history.filter(h => {
-            const hDate = new Date(h.timestamp);
-            const hDateStr = `${hDate.getFullYear()}-${String(hDate.getMonth() + 1).padStart(2, '0')}-${String(hDate.getDate()).padStart(2, '0')}`;
-            return hDateStr === today;
-          });
-          chrome.storage.local.set({ stats, keywords, history });
+          // Clear previous days' lock so matching leads can be processed today
+          clickedLeadIds = [];
+          history = [];
+          chrome.storage.local.set({ stats, keywords, history, clickedLeadIds });
         }
 
         resolve({

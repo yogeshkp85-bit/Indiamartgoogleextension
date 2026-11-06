@@ -84,14 +84,26 @@
 
       chrome.storage.onChanged.addListener((changes, area) => {
         if (area !== 'local') return;
+        let hudNeedsUpdate = false;
         for (const [key, { newValue }] of Object.entries(changes)) {
           if (key === 'settings') {
+            const oldInterval = state.settings.refreshInterval;
             state.settings = { ...state.settings, ...(newValue || {}) };
-            updateHUD();
+            if (state.settings.refreshInterval && state.settings.refreshInterval !== oldInterval) {
+              remainingSeconds = state.settings.refreshInterval;
+              console.log('[IM-Autoclick] Refresh interval live updated to:', remainingSeconds);
+              showToast(`⏱️ Auto-refresh timer updated to ${remainingSeconds}s`);
+            }
+            hudNeedsUpdate = true;
           } else {
             state[key] = newValue;
+            hudNeedsUpdate = true;
+            if (key === 'keywords') {
+              showToast(`🎯 Keywords updated: ${(newValue || []).length} active`);
+            }
           }
         }
+        if (hudNeedsUpdate) updateHUD();
       });
 
       chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -591,10 +603,18 @@
       diagText.innerText = lastScanSummary;
     }
 
+    const limitReached = state.settings.globalDailyClickLimit > 0 && (state.stats.clicksToday || 0) >= state.settings.globalDailyClickLimit;
+
     if (state.settings.engineActive) {
-      dot.classList.add('active');
-      statusText.innerText = 'Active - Auto-clicking';
-      statusText.style.color = '#4ade80';
+      if (limitReached) {
+        dot.classList.remove('active');
+        statusText.innerText = `⚠️ Daily Cap Hit (${state.stats.clicksToday}/${state.settings.globalDailyClickLimit})`;
+        statusText.style.color = '#f87171';
+      } else {
+        dot.classList.add('active');
+        statusText.innerText = 'Active - Auto-clicking';
+        statusText.style.color = '#4ade80';
+      }
     } else {
       dot.classList.remove('active');
       statusText.innerText = 'Engine Paused';

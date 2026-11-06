@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "IndiaMart Lead Autoclick Pro",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "Automated BuyLead matching and contact engine for IndiaMart sellers. Matches keywords, locations, quantities, and verification filters.",
   "icons": {
     "16": "icons/icon16.png",

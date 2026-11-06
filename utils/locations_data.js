@@ -166,7 +166,57 @@
     ]
   };
 
+  const LOCATION_ALIASES = {
+    'gujrat': 'Gujarat',
+    'gujarat': 'Gujarat',
+    'hydrabad': 'Hyderabad',
+    'hyderabad': 'Hyderabad',
+    'bangalore': 'Bengaluru',
+    'bengaluru': 'Bengaluru',
+    'bombay': 'Mumbai',
+    'calcutta': 'Kolkata',
+    'madras': 'Chennai',
+    'orissa': 'Odisha',
+    'odisha': 'Odisha',
+    'pondicherry': 'Puducherry',
+    'puducherry': 'Puducherry',
+    'baroda': 'Vadodara',
+    'cochin': 'Kochi',
+    'trivandrum': 'Thiruvananthapuram',
+    'vizag': 'Visakhapatnam',
+    'banaras': 'Varanasi',
+    'varanasi': 'Varanasi',
+    'allahabad': 'Prayagraj',
+    'prayagraj': 'Prayagraj',
+    'gurgaon': 'Gurugram',
+    'gurugram': 'Gurugram',
+    'poona': 'Pune',
+    'pune': 'Pune',
+    'chhatrapati sambhajinagar': 'Aurangabad',
+    'aurangabad': 'Aurangabad',
+    'up': 'Uttar Pradesh',
+    'uttar pradesh': 'Uttar Pradesh',
+    'mp': 'Madhya Pradesh',
+    'madhya pradesh': 'Madhya Pradesh',
+    'ap': 'Andhra Pradesh',
+    'andhra pradesh': 'Andhra Pradesh',
+    'hp': 'Himachal Pradesh',
+    'wb': 'West Bengal',
+    'west bengal': 'West Bengal',
+    'delhi ncr': 'Delhi',
+    'ncr': 'Delhi'
+  };
+
   class IndiaLocationsManager {
+    /**
+     * Resolves common spelling variations and abbreviations to canonical names
+     */
+    static normalizeName(name) {
+      if (!name) return '';
+      const clean = name.trim().toLowerCase();
+      return LOCATION_ALIASES[clean] || name.trim();
+    }
+
     /**
      * Returns all states and UTs sorted alphabetically
      */
@@ -175,13 +225,15 @@
     }
 
     /**
-     * Returns list of cities for a given state
+     * Returns list of cities for a given state (with alias support)
      */
     static getCitiesForState(stateName) {
       if (!stateName) return [];
       const clean = stateName.trim().toLowerCase();
+      const canonical = (LOCATION_ALIASES[clean] || stateName.trim()).toLowerCase();
+
       for (const [sName, cities] of Object.entries(INDIA_STATES_AND_CITIES)) {
-        if (sName.toLowerCase() === clean) {
+        if (sName.toLowerCase() === clean || sName.toLowerCase() === canonical) {
           return [...cities].sort((a, b) => a.localeCompare(b));
         }
       }
@@ -209,9 +261,12 @@
     static findStateForCity(cityName) {
       if (!cityName) return null;
       const cleanCity = cityName.trim().toLowerCase();
+      const canonicalCity = (LOCATION_ALIASES[cleanCity] || cityName.trim()).toLowerCase();
+
       for (const [stateName, cities] of Object.entries(INDIA_STATES_AND_CITIES)) {
         for (const city of cities) {
-          if (city.toLowerCase() === cleanCity) {
+          const cLower = city.toLowerCase();
+          if (cLower === cleanCity || cLower === canonicalCity) {
             return stateName;
           }
         }
@@ -221,6 +276,7 @@
 
     /**
      * Checks if a location string matches selected states and cities:
+     * - Handles spelling variations (e.g. Gujrat <-> Gujarat, Hydrabad <-> Hyderabad)
      * - If no cities are selected for a state: ANY city in that state is accepted
      * - If cities are selected: only matching cities are accepted
      */
@@ -239,30 +295,31 @@
       // Check if any specific city is matched
       if (cleanCities.length > 0) {
         for (const city of cleanCities) {
-          if (locLower.includes(city)) {
+          const canonical = (LOCATION_ALIASES[city] || city).toLowerCase();
+          if (locLower.includes(city) || locLower.includes(canonical)) {
             return { matched: true, type: 'city', value: city };
           }
         }
       }
 
-      // If specific cities WERE provided and we are here, did user want ONLY those cities?
-      // Rule: "if no selection in citywise, should consider all cities in that state."
-      // If user selected State X with NO specific cities, ALL cities in State X are accepted!
-      // But if user selected State Y with specific cities (e.g. Pune), only Pune is accepted for State Y.
+      // If specific cities WERE provided, check state-level rules
       if (cleanStates.length > 0) {
         for (const st of cleanStates) {
-          // Check if this state has any city constraints in cleanCities
+          const canonicalState = (LOCATION_ALIASES[st] || st).toLowerCase();
           const stateCities = this.getCitiesForState(st).map(c => c.toLowerCase());
-          const hasCityConstraintsForThisState = cleanCities.some(c => stateCities.includes(c));
+          const hasCityConstraintsForThisState = cleanCities.some(c => {
+            const canonicalCity = (LOCATION_ALIASES[c] || c).toLowerCase();
+            return stateCities.includes(c) || stateCities.includes(canonicalCity);
+          });
 
           if (!hasCityConstraintsForThisState) {
             // No city selection for this state -> Accept ANY lead from this state or its cities!
-            if (locLower.includes(st)) {
+            if (locLower.includes(st) || locLower.includes(canonicalState)) {
               return { matched: true, type: 'state', value: st };
             }
             for (const city of stateCities) {
               if (locLower.includes(city)) {
-                return { matched: true, type: 'state-city', value: `${city} (${st})` };
+                return { matched: true, type: 'state-city', value: `${city} (${canonicalState})` };
               }
             }
           }

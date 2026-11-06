@@ -946,7 +946,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Verification & Controls
-  const saveControls = async () => {
+  let saveFeedbackTimer = null;
+  const saveControls = async (showBadge = true) => {
     state.settings.filterOnlyVerified = document.getElementById('filter-verified-toggle').checked;
     state.settings.verificationTypes = {
       gst: document.getElementById('verify-gst').checked,
@@ -960,15 +961,41 @@ document.addEventListener('DOMContentLoaded', () => {
     state.settings.excludeRetailLeads = document.getElementById('exclude-retail-toggle').checked;
     state.settings.refreshInterval = Math.max(3, parseInt(document.getElementById('dashboard-refresh-sec').value, 10) || 15);
     await StorageManager.saveState({ settings: state.settings });
+
+    if (showBadge) {
+      const badge = document.getElementById('controls-saved-badge');
+      if (badge) {
+        badge.style.display = 'inline-block';
+        clearTimeout(saveFeedbackTimer);
+        saveFeedbackTimer = setTimeout(() => {
+          badge.style.display = 'none';
+        }, 3000);
+      }
+    }
   };
 
-  [
+  const controlIds = [
     'filter-verified-toggle', 'verify-gst', 'verify-phone', 'verify-email',
     'verify-whatsapp', 'verify-website', 'global-limit-input',
     'global-min-order-input', 'exclude-retail-toggle', 'dashboard-refresh-sec'
-  ].forEach(id => {
-    document.getElementById(id).addEventListener('change', saveControls);
+  ];
+
+  controlIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', () => saveControls(true));
+    if (el.tagName === 'INPUT' && (el.type === 'number' || el.type === 'text')) {
+      el.addEventListener('input', () => saveControls(false));
+    }
   });
+
+  const saveBtn = document.getElementById('save-controls-btn');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      saveControls(true);
+    });
+  }
 
   // Test Sound
   document.getElementById('test-sound-btn').addEventListener('click', playTestChime);

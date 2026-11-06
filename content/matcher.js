@@ -284,8 +284,10 @@ class LeadMatcher {
         const cleanLoc = loc.trim().toLowerCase();
         if (!cleanLoc) return false;
         if (leadLocLower.includes(cleanLoc)) return true;
-        // If cleanLoc is a state, also check all cities belonging to it
+        // If cleanLoc has an alias (e.g. gujrat -> gujarat, hydrabad -> hyderabad)
         if (typeof IndiaLocationsManager !== 'undefined') {
+          const canonical = IndiaLocationsManager.normalizeName(cleanLoc).toLowerCase();
+          if (leadLocLower.includes(canonical)) return true;
           const cities = IndiaLocationsManager.getCitiesForState(cleanLoc);
           if (cities.some(c => leadLocLower.includes(c.toLowerCase()))) return true;
         }
@@ -322,6 +324,8 @@ class LeadMatcher {
         if (!cleanLoc) return false;
         if (lead.location.toLowerCase().includes(cleanLoc)) return true;
         if (typeof IndiaLocationsManager !== 'undefined') {
+          const canonical = IndiaLocationsManager.normalizeName(cleanLoc).toLowerCase();
+          if (lead.location.toLowerCase().includes(canonical)) return true;
           const cities = IndiaLocationsManager.getCitiesForState(cleanLoc);
           if (cities.some(c => lead.location.toLowerCase().includes(c.toLowerCase()))) return true;
         }
@@ -354,8 +358,8 @@ class LeadMatcher {
    */
   static matchesKeyword(text, keyword) {
     if (!text || !keyword) return false;
-    const cleanText = text.toLowerCase();
-    const cleanKw = keyword.trim().toLowerCase();
+    const cleanText = text.toLowerCase().replace(/hydrualic/g, 'hydraulic');
+    const cleanKw = keyword.trim().toLowerCase().replace(/hydrualic/g, 'hydraulic');
 
     // 1. Direct or substring match
     if (cleanText.includes(cleanKw)) return true;
