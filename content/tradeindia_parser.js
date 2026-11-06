@@ -312,7 +312,6 @@
     }
     return false;
   }
-}
 
   /**
    * Search for the "View Details" button in the right detail pane
